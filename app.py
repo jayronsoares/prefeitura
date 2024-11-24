@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os
-import mysql.connector
-from mysql.connector import Error
+import psycopg2
+from psycopg2 import sql, Error
 from dotenv import load_dotenv
 import logging
 
@@ -15,17 +15,16 @@ app.secret_key = os.getenv('SECRET_KEY', 'default_secret_key')  # For flash mess
 logging.basicConfig(level=logging.ERROR, filename="app.log",
                     format="%(asctime)s - %(levelname)s - %(message)s")
 
-# MySQL Connection Configuration
-def connect_mysql():
+# PostgreSQL Connection Configuration
+def connect_postgres():
     try:
-        connection = mysql.connector.connect(
-            host=os.getenv('MYSQL_HOST'),
-            user=os.getenv('MYSQL_USER'),
-            password=os.getenv('MYSQL_PASSWORD'),
-            database=os.getenv('MYSQL_DATABASE')
+        connection = psycopg2.connect(
+            host=os.getenv('POSTGRES_HOST'),
+            user=os.getenv('POSTGRES_USER'),
+            password=os.getenv('POSTGRES_PASSWORD'),
+            database=os.getenv('POSTGRES_DATABASE')
         )
-        if connection.is_connected():
-            return connection
+        return connection
     except Error as e:
         logging.error(f"Erro na conexão com o banco de dados: {e}")
         return None
@@ -55,15 +54,15 @@ def enviar_formulario():
             flash("Por favor, preencha todos os campos.", "error")
             return redirect(url_for('index'))
 
-        # Insert data into MySQL
-        connection = connect_mysql()
+        # Insert data into PostgreSQL
+        connection = connect_postgres()
         if connection:
             cursor = connection.cursor()
-            insert_query = """
+            insert_query = sql.SQL("""
                 INSERT INTO reclamacao 
                 (nome, idade, rua, bairro, cep, celular, cpf, tipo_reclamacao, detalhes_reclamacao)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """
+            """)
             cursor.execute(insert_query, (nome, idade, rua, bairro, cep, celular, cpf, tipo_reclamacao, detalhes_reclamacao))
             connection.commit()
 
