@@ -14,6 +14,7 @@
         h1 {
             text-align: center;
             color: #0056b3;
+            margin-top: 20px;
         }
         form {
             max-width: 600px;
@@ -53,20 +54,25 @@
         button:hover {
             background-color: #003f7f;
         }
+        .flash-message {
+            max-width: 600px;
+            margin: 10px auto;
+            padding: 10px;
+            color: #fff;
+            background-color: #d9534f;
+            text-align: center;
+            border-radius: 4px;
+        }
     </style>
     <script>
-        // Function to format input dynamically
         function formatInput(input, type) {
-            const value = input.value.replace(/\D/g, ''); // Remove all non-numeric characters
+            const value = input.value.replace(/\D/g, '');
 
             if (type === 'cep') {
-                // Format as CEP: XXXXX-XXX
                 input.value = value.replace(/^(\d{5})(\d{1,3})$/, '$1-$2');
             } else if (type === 'celular') {
-                // Format as Celular: (XX) XXXXX-XXXX
                 input.value = value.replace(/^(\d{2})(\d{4,5})(\d{4})$/, '($1) $2-$3');
             } else if (type === 'cpf') {
-                // Format as CPF: XXX.XXX.XXX-XX
                 input.value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
             }
         }
@@ -74,6 +80,15 @@
 </head>
 <body>
     <h1>Formulário de Reclamação</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-message">
+                {% for category, message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
     <form action="/enviar" method="POST">
         <label for="nome">Nome:</label>
         <input type="text" id="nome" name="nome" required maxlength="100" placeholder="Digite seu nome">
@@ -103,20 +118,20 @@
         <select id="tipo_reclamacao" name="tipo_reclamacao" required>
             <option value="" disabled selected>Selecione uma opção</option>
             <optgroup label="Segurança">
-                <option value="Segurança - Falta de policiamento">Falta de policiamento</option>
-                <option value="Segurança - Muitas ocorrências de assaltos">Muitas ocorrências de assaltos</option>
-                <option value="Segurança - Violência">Violência</option>
+                <option value="Falta de policiamento">Falta de policiamento</option>
+                <option value="Muitas ocorrências de assaltos">Muitas ocorrências de assaltos</option>
+                <option value="Violência">Violência</option>
             </optgroup>
             <optgroup label="Educação">
-                <option value="Educação - Estrutura da Escola Precária">Estrutura da Escola Precária</option>
-                <option value="Educação - Falta Merenda">Falta Merenda</option>
-                <option value="Educação - Ônibus Escolar em Estado Precário">Ônibus Escolar em Estado Precário</option>
-                <option value="Educação - Falta de professor">Falta de professor</option>
+                <option value="Estrutura da Escola Precária">Estrutura da Escola Precária</option>
+                <option value="Falta Merenda">Falta Merenda</option>
+                <option value="Ônibus Escolar em Estado Precário">Ônibus Escolar em Estado Precário</option>
+                <option value="Falta de professor">Falta de professor</option>
             </optgroup>
             <optgroup label="Saúde">
-                <option value="Saúde - UPA com Falta de Equipe Médica">UPA com Falta de Equipe Médica</option>
-                <option value="Saúde - UPA em péssimo estado de conservação">UPA em péssimo estado de conservação</option>
-                <option value="Saúde - UPA com falta de medicamentos">UPA com falta de medicamentos</option>
+                <option value="UPA com Falta de Equipe Médica">UPA com Falta de Equipe Médica</option>
+                <option value="UPA em péssimo estado de conservação">UPA em péssimo estado de conservação</option>
+                <option value="UPA com falta de medicamentos">UPA com falta de medicamentos</option>
             </optgroup>
         </select>
 
